@@ -1,7 +1,5 @@
 # Vault Engine (VE)
-
-![Vault Engine Banner]()  
-*A lightweight, open-source 3D web engine for creating immersive experiences in the browser, powered by Three.js and WebXR.*
+ *A lightweight, open-source 3D web engine for creating immersive experiences in the browser, powered by Three.js and WebXR.*
 
 Vault Engine (VE) is a modern, modular 3D engine designed to bring real-time rendering and immersive experiences—such as games, virtual tours, and VR/AR applications—to the web. Built with simplicity and extensibility in mind, VE leverages [Three.js](https://threejs.org/) for rendering and [WebXR](https://immersiveweb.dev/) for VR/AR support, making it accessible across devices without heavy dependencies.
 

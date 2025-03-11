@@ -1,5 +1,5 @@
 # Vivid
-
+![Xperience Banner](assets/banner.png)
 *A modern, modular 3D engine for creating immersive web experiences, powered by Three.js and WebXR.*
 
 Vivid is a modern, modular 3D engine designed to bring real-time rendering and immersive experiences—such as games, virtual tours, and VR/AR applications—to the web. Built with simplicity and performance in mind, it makes it easy to create stunning 3D experiences that run directly in the browser.

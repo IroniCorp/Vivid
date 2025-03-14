@@ -1,0 +1,36 @@
+{
+  "name": "vivid",
+  "version": "0.1.0",
+  "description": "A modern WebGL-based 3D engine",
+  "main": "dist/vivid.js",
+  "types": "dist/vivid.d.ts",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "jest"
+  },
+  "keywords": [
+    "3d",
+    "engine",
+    "webgl",
+    "graphics",
+    "game-engine"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.24",
+    "@typescript-eslint/eslint-plugin": "^7.1.0",
+    "@typescript-eslint/parser": "^7.1.0",
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.4"
+  },
+  "dependencies": {
+    "gl-matrix": "^3.4.3"
+  }
+} 

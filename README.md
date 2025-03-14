@@ -1,90 +1,91 @@
-# Vivid
-![Xperience Banner](assets/banner.png)
+# 🌟 Vivid Engine
 
+A powerful, modern WebGL 2.0 3D engine designed for high-performance graphics and visual effects in web browsers.
 
-*A modern, modular 3D engine for creating immersive web experiences, powered by Three.js and WebXR.*
-
-Vivid is a modern, modular 3D engine designed to bring real-time rendering and immersive experiences—such as games, virtual tours, and VR/AR applications—to the web. Built with simplicity and performance in mind, it makes it easy to create stunning 3D experiences that run directly in the browser.
+![Vivid Engine](/assets/banner.png)
+![Screenshot](/assets/screenshot.png) <!-- Replace with actual screenshot/demo image -->
 
 ## ✨ Features
 
-- **Real-Time 3D Rendering**: High-performance graphics using Three.js, built on WebGL.
-- **Camera Controls**: Intuitive navigation with mouse, touch, or keyboard inputs via OrbitControls.
-- **Model Loading**: Import 3D assets with built-in GLTF support.
-- **WebXR Integration**: Seamless VR and AR experiences on compatible devices.
-- **Modular Design**: Extendable architecture for custom components and features.
-- **No Framework Bloat**: Pure HTML, CSS, and JavaScript—no React or heavy libraries required.
+### Current Features
+- 🚀 WebGL 2.0 based rendering pipeline
+- 📦 Efficient entity management system
+- 🎨 PBR (Physically Based Rendering) materials
+- 💡 Advanced lighting system (Point, Directional, Spot lights)
+- 🌈 Post-processing effects (Bloom, FXAA, Vignette)
+- 🎆 Particle system with GPU instancing
+- 🎭 Texture support with automatic mipmap generation
+- 🎮 Camera system with perspective and orthographic projections
+
+### Coming Soon
+- 🌍 Dynamic shadow mapping
+- 🎵 3D audio system
+- 🎮 Physics engine integration
+- 🎨 Advanced material editor
+- 📦 GLTF model loading
+- 🎬 Animation system
+- 🌐 Scene graph management
+- 🎯 Picking and raycasting
 
 ## 🚀 Quick Start
 
-### Local Development
-1. **Clone the Repository**  
-   ```bash
-   git clone https://github.com/IroniCorp/Vivid.git
-   cd Vivid
-   ```
+```bash
+# Clone the repository
+git clone https://github.com/manugeni/Vivid.git
 
-2. **Serve the Website**  
-   Run a local server to view the project (required for module imports):
-   ```bash
-   npx http-server docs/
-   ```
-   Open `http://localhost:8080` in your browser.
+# Navigate to the project directory
+cd Vivid
 
-3. **Explore Examples**  
-   Check out the templates in `docs/examples/`:
-   - `basic-cube/`: A simple rotating cube with lighting.
-   - `vr-experience/`: A VR-ready scene using WebXR.
+# Install dependencies
+npm install
 
-### Using Vivid in Your Project
-1. Copy the `src/` folder to your project.
-2. Include the engine in your HTML:
-   ```html
-   <script type="module">
-     import { Vivid } from './src/core/Vivid.js';
-     const engine = new Vivid(document.body);
-     engine.start();
-   </script>
-   ```
-
-## 📂 Project Structure
-
-```
-Vivid/
-├── src/                   # Engine source code
-│   ├── core/             # Core classes (Vivid.js, etc.)
-│   ├── components/       # Reusable components
-│   └── utils/           # Utilities (loaders, inputs)
-├── docs/                 # Website files for GitHub Pages
-│   ├── index.html       # Landing page with features and templates
-│   ├── js/             # Copy of src/ for web serving
-│   ├── assets/         # 3D models, textures, etc.
-│   └── examples/       # Demo templates
-├── README.md            # This file
-└── LICENSE              # MIT License
+# Start the development server
+npm run dev
 ```
 
-## 🛠️ Development
+Visit `http://localhost:5173` to see the demo in action!
 
-- **Dependencies**: Only Three.js (loaded via CDN).
-- **Build**: Manually copy `src/` to `docs/js/` before pushing to GitHub, or use a script:
-  ```bash
-  cp -r src/* docs/js/
-  ```
+## 🎮 Demos
+
+- 🎆 [Particle System Demo](/demo/particle-demo.html) - Showcases the particle system with fountain, fire, and smoke effects
+- More demos coming soon!
+
+## 🛠️ Usage
+
+```javascript
+import { Engine, Scene, Camera } from 'vivid';
+
+// Create a new engine instance
+const engine = new Engine(canvas);
+
+// Set up your scene
+const scene = new Scene();
+const camera = new Camera();
+
+// Add objects, lights, and effects
+// ... your scene setup code ...
+
+// Start the render loop
+engine.start();
+```
+
+## 📚 Documentation
+
+Comprehensive documentation is coming soon! Stay tuned for detailed guides and API references.
 
 ## 🤝 Contributing
 
-Contributions are welcome! Fork the repo, make your changes, and submit a pull request. See issues for feature ideas or bugs.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📜 License
+## 👥 Team
 
-Vivid is licensed under the [MIT License](LICENSE).
+- **Lead Developer**: [@manugeni](https://github.com/manugeni) | [@callmerendani](https://twitter.com/callmerendani)
+- **Organization**: [Ironi Corporation](https://github.com/ironi-corp) | [@ironi_corp](https://twitter.com/ironi_corp)
 
-## 🌟 Acknowledgements
+## 📄 License
 
-- [Three.js](https://threejs.org/) for an amazing 3D library.
-- [WebXR](https://immersiveweb.dev/) for immersive web standards.
-- Built with ❤️ by the IroniCorp team.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
-Star ⭐ this repository if you find it helpful!
+## 🌟 Show Your Support
+
+Give a ⭐️ if this project helped you!

@@ -3,115 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vivid Engine Demo</title>
+    <title>Vivid Engine - Modern WebGL 2.0 3D Engine | Rendani</title>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #000;
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --dark: #1f2937;
+            --light: #f3f4f6;
         }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--light);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .demo-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: var(--dark);
+            overflow: hidden;
+        }
+
         canvas {
-            width: 100vw;
-            height: 100vh;
-            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .features {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 2rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .cta {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--dark);
+            color: white;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 0.25rem;
+            transition: background 0.3s;
+            margin: 0.5rem;
+        }
+
+        .button:hover {
+            background: var(--secondary);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: var(--dark);
+            color: white;
+        }
+
+        .social-links {
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 0.5rem;
+            opacity: 0.8;
+        }
+
+        .social-links a:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .demo-container {
+                height: 300px;
+            }
         }
     </style>
-    <!-- Add gl-matrix library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/3.4.2/gl-matrix-min.js"></script>
 </head>
 <body>
-    <canvas id="canvas"></canvas>
+    <header>
+        <h1>Vivid Engine</h1>
+        <p class="subtitle">A powerful WebGL 2.0 3D engine for creating stunning visual experiences in the browser</p>
+        <a href="https://github.com/manugeni/Vivid" class="button">View on GitHub</a>
+        <a href="/demo/particle-demo.html" class="button">Try Demo</a>
+    </header>
 
-    <!-- Shader source code -->
-    <script type="x-shader/x-vertex" id="vertexShader">
-        #version 300 es
-        precision highp float;
+    <main>
+        <div class="demo-container">
+            <canvas id="demo-canvas"></canvas>
+        </div>
 
-        layout(location = 0) in vec3 aPosition;
-        layout(location = 1) in vec3 aNormal;
-        layout(location = 2) in vec2 aTexCoord;
+        <section class="features">
+            <h2>Features</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🚀 WebGL 2.0</h3>
+                    <p>Built on modern WebGL 2.0 for maximum performance and advanced graphics capabilities.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎨 PBR Materials</h3>
+                    <p>Physically Based Rendering for realistic materials and lighting.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💡 Advanced Lighting</h3>
+                    <p>Support for multiple light types with shadow mapping capabilities.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎆 Particle System</h3>
+                    <p>GPU-accelerated particle system for stunning visual effects.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🌈 Post Processing</h3>
+                    <p>Built-in effects like Bloom, FXAA, and Vignette for enhanced visuals.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 Modern Architecture</h3>
+                    <p>Clean, modular codebase designed for extensibility and performance.</p>
+                </div>
+            </div>
+        </section>
 
-        uniform mat4 uModel;
-        uniform mat4 uView;
-        uniform mat4 uProjection;
+        <section class="cta">
+            <h2>Ready to Create?</h2>
+            <p>Start building amazing 3D experiences today</p>
+            <a href="https://github.com/manugeni/Vivid" class="button">Get Started</a>
+            <a href="/docs" class="button">Documentation</a>
+        </section>
+    </main>
 
-        out vec3 vNormal;
-        out vec2 vTexCoord;
-        out vec3 vFragPos;
+    <footer>
+        <p>Created with ❤️ by Ironi Corporation</p>
+        <div class="social-links">
+            <a href="https://github.com/manugeni">@manugeni</a>
+            <a href="https://twitter.com/callmerendani">@callmerendani</a>
+            <a href="https://twitter.com/ironi_corp">@ironi_corp</a>
+        </div>
+    </footer>
 
-        void main() {
-            vFragPos = vec3(uModel * vec4(aPosition, 1.0));
-            vNormal = mat3(transpose(inverse(uModel))) * aNormal;
-            vTexCoord = aTexCoord;
-            
-            gl_Position = uProjection * uView * uModel * vec4(aPosition, 1.0);
-        }
-    </script>
+    <script type="module">
+        import { ParticleDemo } from './demo/ParticleDemo.js';
 
-    <script type="x-shader/x-fragment" id="fragmentShader">
-        #version 300 es
-        precision highp float;
+        const canvas = document.getElementById('demo-canvas');
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
 
-        in vec3 vNormal;
-        in vec2 vTexCoord;
-        in vec3 vFragPos;
-
-        uniform vec3 uLightPos;
-        uniform vec3 uViewPos;
-        uniform vec3 uLightColor;
-        uniform vec3 uObjectColor;
-
-        out vec4 fragColor;
-
-        void main() {
-            // Ambient
-            float ambientStrength = 0.1;
-            vec3 ambient = ambientStrength * uLightColor;
-
-            // Diffuse
-            vec3 norm = normalize(vNormal);
-            vec3 lightDir = normalize(uLightPos - vFragPos);
-            float diff = max(dot(norm, lightDir), 0.0);
-            vec3 diffuse = diff * uLightColor;
-
-            // Specular
-            float specularStrength = 0.5;
-            vec3 viewDir = normalize(uViewPos - vFragPos);
-            vec3 reflectDir = reflect(-lightDir, norm);
-            float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-            vec3 specular = specularStrength * spec * uLightColor;
-
-            vec3 result = (ambient + diffuse + specular) * uObjectColor;
-            fragColor = vec4(result, 1.0);
-        }
-    </script>
-    
-    <!-- Engine core -->
-    <script src="src/core/Shader.js"></script>
-    <script src="src/core/Mesh.js"></script>
-    <script src="src/core/Camera.js"></script>
-    <script src="src/core/Engine.js"></script>
-    
-    <!-- Demo scene -->
-    <script src="src/demo/DemoScene.js"></script>
-    
-    <!-- Main script -->
-    <script>
-        const canvas = document.getElementById('canvas');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const demo = new DemoScene(canvas);
+        const demo = new ParticleDemo(canvas);
 
         window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            // Update camera aspect ratio here if needed
-            demo.camera.setPerspective(45 * Math.PI / 180, canvas.width / canvas.height, 0.1, 100.0);
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            demo.engine.resize(canvas.width, canvas.height);
         });
 
-        // Clean up when the window is closed
-        window.addEventListener('beforeunload', () => {
+        window.addEventListener('unload', () => {
             demo.dispose();
         });
     </script>

@@ -3,7 +3,11 @@
 A powerful, modern WebGL 2.0 3D engine designed for high-performance graphics and visual effects in web browsers.
 
 ![Vivid Engine](/assets/banner.png)
-![Screenshot](/assets/screenshot.png) <!-- Replace with actual screenshot/demo image -->
+![Screenshot](/assets/screenshot.png)
+
+[![GitHub stars](https://img.shields.io/github/stars/manugeni/vivid-engine.svg?style=social&label=Star&maxAge=2592000)](https://github.com/manugeni/vivid-engine/stargazers/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Twitter Follow](https://img.shields.io/twitter/follow/callmerendani.svg?style=social)](https://twitter.com/callmerendani)
 
 ## ✨ Features
 
@@ -31,10 +35,10 @@ A powerful, modern WebGL 2.0 3D engine designed for high-performance graphics an
 
 ```bash
 # Clone the repository
-git clone https://github.com/manugeni/Vivid.git
+git clone https://github.com/manugeni/vivid-engine.git
 
 # Navigate to the project directory
-cd Vivid
+cd vivid-engine
 
 # Install dependencies
 npm install
@@ -53,7 +57,7 @@ Visit `http://localhost:5173` to see the demo in action!
 ## 🛠️ Usage
 
 ```javascript
-import { Engine, Scene, Camera } from 'vivid';
+import { Engine, Scene, Camera } from '@manugeni/vivid-engine';
 
 // Create a new engine instance
 const engine = new Engine(canvas);
@@ -75,12 +79,19 @@ Comprehensive documentation is coming soon! Stay tuned for detailed guides and A
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+We welcome contributions! Here's how you can help:
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+Please read our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
 ## 👥 Team
 
 - **Lead Developer**: [@manugeni](https://github.com/manugeni) | [@callmerendani](https://twitter.com/callmerendani)
-- **Organization**: [Ironi Corporation](https://github.com/ironi-corp) | [@ironi_corp](https://twitter.com/ironi_corp)
 
 ## 📄 License
 
@@ -88,4 +99,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🌟 Show Your Support
 
-Give a ⭐️ if this project helped you!
+If you find Vivid Engine helpful, please consider:
+
+- Giving it a ⭐️ on GitHub
+- Following me on Twitter [@callmerendani](https://twitter.com/callmerendani)
+- Sharing it with others
+
+## 🙏 Acknowledgments
+
+Special thanks to:
+- The WebGL and graphics programming community
+- All our contributors and supporters
+- Everyone who has starred and forked the project

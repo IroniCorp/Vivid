@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +8,29 @@
         :root {
             --primary: #6366f1;
             --secondary: #8b5cf6;
-            --dark: #1f2937;
-            --light: #f3f4f6;
+            --accent: #22d3ee;
+            
+            /* Light theme */
+            --light-bg: #f3f4f6;
+            --light-text: #1f2937;
+            --light-card: #ffffff;
+            
+            /* Dark theme */
+            --dark-bg: #0f172a;
+            --dark-text: #e2e8f0;
+            --dark-card: #1e293b;
+        }
+
+        .dark {
+            --bg: var(--dark-bg);
+            --text: var(--dark-text);
+            --card: var(--dark-card);
+        }
+
+        .light {
+            --bg: var(--light-bg);
+            --text: var(--light-text);
+            --card: var(--light-card);
         }
 
         * {
@@ -21,40 +42,77 @@
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
-            color: var(--dark);
-            background: var(--light);
+            color: var(--text);
+            background: var(--bg);
+            overflow-x: hidden;
+            transition: background-color 0.3s ease;
         }
 
         header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            color: var(--text);
             padding: 4rem 2rem;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 100;
+            background: var(--card);
+            border: none;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .demo-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
         }
 
         h1 {
-            font-size: 3rem;
+            font-size: 4rem;
             margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .subtitle {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             opacity: 0.9;
             max-width: 600px;
             margin: 0 auto 2rem;
-        }
-
-        .demo-container {
-            position: relative;
-            width: 100%;
-            height: 500px;
-            background: var(--dark);
-            overflow: hidden;
-        }
-
-        canvas {
-            width: 100%;
-            height: 100%;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
         }
 
         .features {
@@ -66,7 +124,10 @@
         .features h2 {
             text-align: center;
             margin-bottom: 3rem;
-            font-size: 2rem;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .feature-grid {
@@ -76,22 +137,41 @@
         }
 
         .feature-card {
-            background: white;
+            background: var(--card);
             padding: 2rem;
-            border-radius: 0.5rem;
+            border-radius: 1rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary);
         }
 
         .feature-card h3 {
             color: var(--primary);
             margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .feature-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            margin-top: 1rem;
         }
 
         .cta {
             text-align: center;
-            padding: 4rem 2rem;
-            background: var(--dark);
-            color: white;
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            color: var(--text);
         }
 
         .button {
@@ -100,20 +180,27 @@
             background: var(--primary);
             color: white;
             text-decoration: none;
-            border-radius: 0.25rem;
-            transition: background 0.3s;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
             margin: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
         }
 
         .button:hover {
             background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
         }
 
         footer {
             text-align: center;
             padding: 2rem;
-            background: var(--dark);
-            color: white;
+            background: var(--card);
+            color: var(--text);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .social-links {
@@ -121,70 +208,95 @@
         }
 
         .social-links a {
-            color: white;
+            color: var(--text);
             text-decoration: none;
             margin: 0 0.5rem;
             opacity: 0.8;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background: rgba(99, 102, 241, 0.1);
         }
 
         .social-links a:hover {
             opacity: 1;
+            background: rgba(99, 102, 241, 0.2);
         }
 
         @media (max-width: 768px) {
             h1 {
-                font-size: 2rem;
+                font-size: 2.5rem;
             }
 
             .subtitle {
-                font-size: 1rem;
+                font-size: 1.2rem;
             }
 
-            .demo-container {
-                height: 300px;
+            header {
+                padding: 2rem 1rem;
             }
         }
     </style>
 </head>
 <body>
+    <button class="theme-toggle" aria-label="Toggle theme">🌙</button>
     <header>
-        <h1>Vivid Engine</h1>
-        <p class="subtitle">A powerful WebGL 2.0 3D engine for creating stunning visual experiences in the browser</p>
-        <a href="https://github.com/manugeni/vivid-engine" class="button">View on GitHub</a>
-        <a href="/vivid-engine/demo/particle-demo.html" class="button">Try Demo</a>
+        <canvas id="demo-canvas" class="demo-canvas"></canvas>
+        <div class="header-content">
+            <h1>Vivid Engine</h1>
+            <p class="subtitle">A powerful WebGL 2.0 3D engine for creating stunning visual experiences in the browser</p>
+            <a href="https://github.com/manugeni/vivid-engine" class="button">View on GitHub</a>
+        </div>
     </header>
 
     <main>
-        <div class="demo-container">
-            <canvas id="demo-canvas"></canvas>
-        </div>
-
         <section class="features">
             <h2>Features</h2>
             <div class="feature-grid">
                 <div class="feature-card">
                     <h3>🚀 WebGL 2.0</h3>
                     <p>Built on modern WebGL 2.0 for maximum performance and advanced graphics capabilities.</p>
+                    <span class="feature-tag">Core</span>
                 </div>
                 <div class="feature-card">
                     <h3>🎨 PBR Materials</h3>
-                    <p>Physically Based Rendering for realistic materials and lighting.</p>
+                    <p>Physically Based Rendering with metallic-roughness workflow and image-based lighting.</p>
+                    <span class="feature-tag">Materials</span>
                 </div>
                 <div class="feature-card">
                     <h3>💡 Advanced Lighting</h3>
-                    <p>Support for multiple light types with shadow mapping capabilities.</p>
+                    <p>Dynamic shadow mapping, volumetric lighting, and real-time global illumination.</p>
+                    <span class="feature-tag">Lighting</span>
                 </div>
                 <div class="feature-card">
-                    <h3>🎆 Particle System</h3>
-                    <p>GPU-accelerated particle system for stunning visual effects.</p>
+                    <h3>🎆 Particle Systems</h3>
+                    <p>GPU-accelerated particle systems with collision detection and force fields.</p>
+                    <span class="feature-tag">Effects</span>
                 </div>
                 <div class="feature-card">
                     <h3>🌈 Post Processing</h3>
-                    <p>Built-in effects like Bloom, FXAA, and Vignette for enhanced visuals.</p>
+                    <p>HDR rendering, tone mapping, and advanced effects like SSAO, SSR, and motion blur.</p>
+                    <span class="feature-tag">Effects</span>
                 </div>
                 <div class="feature-card">
                     <h3>📦 Modern Architecture</h3>
-                    <p>Clean, modular codebase designed for extensibility and performance.</p>
+                    <p>Entity Component System (ECS) with WebAssembly acceleration.</p>
+                    <span class="feature-tag">Core</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🎭 Advanced Materials</h3>
+                    <p>Subsurface scattering, clear coat, anisotropic materials, and custom shaders.</p>
+                    <span class="feature-tag">Materials</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🎮 Physics Engine</h3>
+                    <p>Integrated physics with rigid bodies, soft bodies, and constraints.</p>
+                    <span class="feature-tag">Physics</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🎬 Animation System</h3>
+                    <p>Skeletal animation, morph targets, and procedural animation support.</p>
+                    <span class="feature-tag">Animation</span>
                 </div>
             </div>
         </section>
@@ -193,7 +305,7 @@
             <h2>Ready to Create?</h2>
             <p>Start building amazing 3D experiences today</p>
             <a href="https://github.com/manugeni/vivid-engine" class="button">Get Started</a>
-            <a href="/docs" class="button">Documentation</a>
+            <a href="https://github.com/manugeni/vivid-engine#-documentation" class="button">Documentation</a>
         </section>
     </main>
 
@@ -206,22 +318,60 @@
     </footer>
 
     <script type="module">
-        import { ParticleDemo } from './demo/ParticleDemo.js';
+        import { ParticleDemo } from './src/demo/ParticleDemo.js';
 
         const canvas = document.getElementById('demo-canvas');
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
+        canvas.width = canvas.clientWidth * window.devicePixelRatio;
+        canvas.height = canvas.clientHeight * window.devicePixelRatio;
 
         const demo = new ParticleDemo(canvas);
 
-        window.addEventListener('resize', () => {
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-            demo.engine.resize(canvas.width, canvas.height);
+        // Theme toggle functionality
+        const themeToggle = document.querySelector('.theme-toggle');
+        const html = document.documentElement;
+        
+        function updateThemeIcon(isDark) {
+            themeToggle.textContent = isDark ? '🌙' : '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const isDark = html.classList.toggle('dark');
+            html.classList.toggle('light');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcon(isDark);
         });
 
+        // Set initial theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        html.classList.add(savedTheme);
+        html.classList.remove(savedTheme === 'dark' ? 'light' : 'dark');
+        updateThemeIcon(savedTheme === 'dark');
+
+        // Enhanced resize handler with debouncing
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            if (resizeTimeout) {
+                clearTimeout(resizeTimeout);
+            }
+            resizeTimeout = setTimeout(() => {
+                canvas.width = canvas.clientWidth * window.devicePixelRatio;
+                canvas.height = canvas.clientHeight * window.devicePixelRatio;
+                demo.engine.resize(canvas.width, canvas.height);
+            }, 250);
+        });
+
+        // Cleanup on page unload
         window.addEventListener('unload', () => {
             demo.dispose();
+        });
+
+        // Handle visibility change to pause/resume animation
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                demo.pause();
+            } else {
+                demo.resume();
+            }
         });
     </script>
 </body>

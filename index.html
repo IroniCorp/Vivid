@@ -3,132 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vivid | Studio</title>
-    <!-- Modern UI Frameworks -->
-    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.2.96/css/materialdesignicons.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/tippy.js@6.3.7/dist/tippy.css" rel="stylesheet">
+    <title>Vivid Engine</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
     <style>
-        :root {
-            --primary: #6366f1;
-            --secondary: #8b5cf6;
-            --accent: #22d3ee;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --error: #ef4444;
-            --dark-bg: #1e1e1e;
-            --dark-panel: #252526;
-            --dark-panel-light: #2d2d2d;
-            --dark-text: #e2e8f0;
-            --dark-text-secondary: #94a3b8;
-            --border-color: #333333;
-            --border-hover: #404040;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--dark-bg);
-            color: var(--dark-text);
-            height: 100vh;
-            overflow: hidden;
+        :root {
+            --primary: #00ff88;
+            --primary-dark: #00cc6a;
+            --bg-dark: #1a1a1a;
+            --bg-panel: #252526;
+            --bg-panel-light: #2d2d2d;
+            --border: #333;
+            --text: #ffffff;
+            --text-secondary: #888;
         }
 
-        .app-container {
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: var(--bg-dark);
+            color: var(--text);
+            font-family: 'Arial', sans-serif;
+        }
+
+        .editor {
             display: flex;
             flex-direction: column;
             height: 100vh;
         }
 
-        /* Toolbar Styles */
+        /* Toolbar */
         .toolbar {
+            height: 40px;
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
-            padding: 0.5rem 1rem;
-            background: var(--dark-panel);
-            border-bottom: 1px solid var(--border-color);
-            height: 48px;
+            padding: 0 16px;
+            gap: 16px;
         }
 
-        .logo {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin-right: 2rem;
+        .toolbar-group {
             display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .toolbar-actions {
-            display: flex;
-            gap: 1rem;
+            gap: 8px;
             align-items: center;
         }
 
-        .toolbar-divider {
+        .toolbar-separator {
             width: 1px;
             height: 24px;
-            background: var(--border-color);
-            margin: 0 0.5rem;
+            background: var(--border);
+            margin: 0 8px;
         }
 
-        /* Button Styles */
-        .button {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: var(--dark-panel-light);
-            color: var(--dark-text);
-            border: 1px solid var(--border-color);
-            border-radius: 0.25rem;
-            cursor: pointer;
-            font-size: 0.875rem;
-            transition: all 0.2s;
-        }
-
-        .button:hover {
-            background: var(--dark-panel);
-            border-color: var(--border-hover);
-        }
-
-        .button.primary {
-            background: var(--primary);
-            border: none;
-            color: white;
-        }
-
-        .button.primary:hover {
-            background: var(--secondary);
-        }
-
-        /* Main Content Layout */
+        /* Main Content */
         .main-content {
             display: flex;
             flex: 1;
             overflow: hidden;
         }
 
-        /* Panel Styles */
+        /* Panels */
         .panel {
-            background: var(--dark-panel);
-            border: 1px solid var(--border-color);
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
         }
 
         .panel-header {
-            padding: 0.75rem 1rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--dark-text);
-            background: var(--dark-panel-light);
-            border-bottom: 1px solid var(--border-color);
+            height: 32px;
+            background: var(--bg-panel-light);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
+            padding: 0 12px;
+            font-size: 12px;
+            font-weight: bold;
             justify-content: space-between;
         }
 
@@ -139,315 +94,578 @@
             flex-direction: column;
         }
 
-        /* Scene Explorer */
-        .scene-explorer {
+        /* Hierarchy */
+        .hierarchy {
             flex: 1;
             overflow-y: auto;
-            display: flex;
-            flex-direction: column;
+            padding: 8px;
         }
 
-        .tree-view {
-            list-style: none;
-            padding: 0.5rem;
-        }
-
-        .tree-item {
+        .hierarchy-item {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem;
+            padding: 4px 8px;
             cursor: pointer;
-            color: var(--dark-text);
-            border-radius: 0.25rem;
-            transition: all 0.2s;
+            border-radius: 4px;
+            gap: 8px;
+            font-size: 13px;
         }
 
-        .tree-item:hover {
-            background: var(--dark-panel-light);
+        .hierarchy-item:hover {
+            background: var(--bg-panel-light);
         }
 
-        .tree-item.selected {
-            background: rgba(99, 102, 241, 0.1);
+        .hierarchy-item.selected {
+            background: rgba(0, 255, 136, 0.1);
             color: var(--primary);
         }
 
-        .tree-item i {
-            font-size: 1rem;
-        }
-
-        /* Properties Panel */
-        .properties-panel {
+        /* Inspector */
+        .inspector {
             height: 400px;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--border);
+            overflow-y: auto;
+        }
+
+        .component {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .component-header {
+            padding: 8px 12px;
+            background: var(--bg-panel-light);
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .property-group {
-            padding: 0.75rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .property-group h4 {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: var(--dark-text-secondary);
-            margin-bottom: 0.5rem;
+        .component-content {
+            padding: 12px;
         }
 
         .property-row {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
+            margin-bottom: 8px;
+            gap: 8px;
+            font-size: 12px;
         }
 
         .property-label {
-            font-size: 0.875rem;
-            min-width: 100px;
+            width: 80px;
+            color: var(--text-secondary);
+        }
+
+        .property-field {
+            flex: 1;
+            display: flex;
+            gap: 4px;
         }
 
         .property-input {
-            flex: 1;
-            background: var(--dark-panel-light);
-            border: 1px solid var(--border-color);
-            color: var(--dark-text);
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.875rem;
+            background: var(--bg-panel-light);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            width: 60px;
         }
 
-        /* Center Panel */
-        .center-panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .viewport-toolbar {
-            padding: 0.5rem;
-            background: var(--dark-panel-light);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            gap: 0.5rem;
-        }
-
+        /* Viewport */
         .viewport {
             flex: 1;
             position: relative;
-            background: var(--dark-bg);
         }
 
-        #renderCanvas {
+        .viewport-toolbar {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            display: flex;
+            padding: 4px;
+            gap: 4px;
+            z-index: 100;
+        }
+
+        .viewport-canvas {
             width: 100%;
             height: 100%;
-            touch-action: none;
         }
 
         /* Right Panel */
         .right-panel {
             width: 300px;
-            display: flex;
-            flex-direction: column;
+            border-left: 1px solid var(--border);
         }
 
-        .settings-panel {
-            flex: 1;
-            overflow-y: auto;
+        /* Buttons */
+        .btn {
+            background: var(--bg-panel-light);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            background: var(--bg-panel);
+        }
+
+        .btn.primary {
+            background: var(--primary);
+            border-color: var(--primary-dark);
+            color: var(--bg-dark);
+        }
+
+        .btn.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn.tool {
+            padding: 6px;
+        }
+
+        .btn.tool.active {
+            background: var(--primary);
+            color: var(--bg-dark);
+        }
+
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+
+        #loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #loading-bar {
+            width: 200px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        #loading-progress {
+            width: 0%;
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        #loading-text {
+            margin-top: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        #logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        #logo span {
+            color: var(--primary);
         }
 
         /* Status Bar */
-        .status-bar {
+        #status-bar {
             height: 24px;
-            background: var(--dark-panel);
-            border-top: 1px solid var(--border-color);
+            background: var(--bg-panel);
+            border-top: 1px solid var(--border);
             display: flex;
             align-items: center;
-            padding: 0 1rem;
-            font-size: 0.75rem;
-            color: var(--dark-text-secondary);
-            justify-content: space-between;
+            padding: 0 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
         }
 
         .status-item {
+            margin-right: 16px;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 6px;
         }
 
-        /* Tabs */
-        .tabs {
-            display: flex;
-            background: var(--dark-panel-light);
-            border-bottom: 1px solid var(--border-color);
+        /* Context Menu */
+        #context-menu {
+            position: fixed;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 4px;
+            min-width: 160px;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
-        .tab {
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-            color: var(--dark-text-secondary);
+        .context-menu-item {
+            padding: 6px 12px;
+            font-size: 13px;
             cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .tab:hover {
-            color: var(--dark-text);
+        .context-menu-item:hover {
+            background: var(--bg-panel-light);
         }
 
-        .tab.active {
+        .context-menu-separator {
+            height: 1px;
+            background: var(--border);
+            margin: 4px 0;
+        }
+
+        /* Drop Overlay */
+        #drop-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,255,136,0.1);
+            border: 2px dashed var(--primary);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            font-size: 24px;
             color: var(--primary);
-            border-bottom-color: var(--primary);
+        }
+
+        #drop-overlay.visible {
+            display: flex;
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
+    <div id="loading-screen">
+        <div id="logo">Vivid<span>Engine</span></div>
+        <div id="loading-bar">
+            <div id="loading-progress"></div>
+        </div>
+        <div id="loading-text">Loading...</div>
+    </div>
+
+    <div class="editor">
         <div class="toolbar">
-            <div class="logo">
-                <i class="mdi mdi-cube-outline"></i>
-                Vivid Engine
+            <div class="toolbar-group">
+                <div id="logo">Vivid<span>Engine</span></div>
             </div>
-            <div class="toolbar-actions">
-                <button class="button primary">
+            <div class="toolbar-separator"></div>
+            <div class="toolbar-group">
+                <button class="btn primary" id="play-btn">
                     <i class="mdi mdi-play"></i>
-                    Run
+                    Play
                 </button>
-                <div class="toolbar-divider"></div>
-                <button class="button">
+            </div>
+            <div class="toolbar-separator"></div>
+            <div class="toolbar-group">
+                <button class="btn" id="save-btn">
                     <i class="mdi mdi-content-save"></i>
                     Save
                 </button>
-                <button class="button">
-                    <i class="mdi mdi-cog"></i>
-                </button>
-                <button class="button">
+                <button class="btn" id="export-btn">
                     <i class="mdi mdi-export"></i>
+                    Export
                 </button>
             </div>
         </div>
+
         <div class="main-content">
-            <div class="left-panel panel">
-                <div class="scene-explorer">
+            <div class="panel left-panel">
+                <div class="hierarchy">
                     <div class="panel-header">
-                        Scene Explorer
-                        <button class="button">
+                        Hierarchy
+                        <button class="btn" id="add-object-btn">
                             <i class="mdi mdi-plus"></i>
                         </button>
                     </div>
-                    <div class="tabs">
-                        <div class="tab active">Scene</div>
-                        <div class="tab">Assets</div>
-                    </div>
-                    <ul class="tree-view">
-                        <li class="tree-item">
-                            <i class="mdi mdi-cube-outline"></i>
-                            Scene
-                        </li>
-                        <li class="tree-item selected">
-                            <i class="mdi mdi-camera"></i>
-                            Main Camera
-                        </li>
-                        <li class="tree-item">
-                            <i class="mdi mdi-lightbulb"></i>
-                            Directional Light
-                        </li>
-                        <li class="tree-item">
-                            <i class="mdi mdi-cube"></i>
-                            Cube
-                        </li>
-                    </ul>
+                    <div id="hierarchy-content"></div>
                 </div>
-                <div class="properties-panel">
-                    <div class="panel-header">Properties</div>
-                    <div class="property-group">
-                        <h4>Transform</h4>
-                        <div class="property-row">
-                            <span class="property-label">Position</span>
-                            <input type="text" class="property-input" value="0, 0, 0">
-                        </div>
-                        <div class="property-row">
-                            <span class="property-label">Rotation</span>
-                            <input type="text" class="property-input" value="0, 0, 0">
-                        </div>
-                        <div class="property-row">
-                            <span class="property-label">Scale</span>
-                            <input type="text" class="property-input" value="1, 1, 1">
-                        </div>
+                <div class="inspector">
+                    <div class="panel-header">
+                        Inspector
+                        <button class="btn" id="add-component-btn">
+                            <i class="mdi mdi-plus"></i>
+                        </button>
                     </div>
+                    <div id="inspector-content"></div>
                 </div>
             </div>
-            <div class="center-panel">
+
+            <div class="viewport">
                 <div class="viewport-toolbar">
-                    <button class="button">
+                    <button class="btn tool" id="translate-tool" title="Translate (W)">
                         <i class="mdi mdi-cursor-move"></i>
                     </button>
-                    <button class="button">
+                    <button class="btn tool" id="rotate-tool" title="Rotate (E)">
                         <i class="mdi mdi-rotate-3d"></i>
                     </button>
-                    <button class="button">
+                    <button class="btn tool" id="scale-tool" title="Scale (R)">
                         <i class="mdi mdi-arrow-expand-all"></i>
                     </button>
-                    <div class="toolbar-divider"></div>
-                    <button class="button">
-                        <i class="mdi mdi-grid"></i>
-                    </button>
-                    <button class="button">
+                    <div class="toolbar-separator"></div>
+                    <button class="btn tool" id="local-space-btn" title="Toggle World/Local Space (X)">
                         <i class="mdi mdi-axis-arrow"></i>
                     </button>
+                    <button class="btn tool" id="snap-btn" title="Toggle Snap (V)">
+                        <i class="mdi mdi-grid"></i>
+                    </button>
                 </div>
-                <div class="viewport">
-                    <canvas id="renderCanvas"></canvas>
-                </div>
-                <div class="status-bar">
-                    <div class="status-item">
-                        <i class="mdi mdi-cube"></i>
-                        4 Objects
+                <canvas id="viewport-canvas" class="viewport-canvas"></canvas>
+            </div>
+
+            <div class="panel right-panel">
+                <div class="panel-header">Scene Settings</div>
+                <div class="component">
+                    <div class="component-header">Post Processing</div>
+                    <div class="component-content">
+                        <div class="property-row">
+                            <label class="property-label">Bloom</label>
+                            <div class="property-field">
+                                <input type="checkbox" id="bloom-enabled">
+                                <input type="number" class="property-input" id="bloom-intensity" value="1.0" step="0.1">
+                            </div>
+                        </div>
+                        <div class="property-row">
+                            <label class="property-label">FXAA</label>
+                            <div class="property-field">
+                                <input type="checkbox" id="fxaa-enabled">
+                            </div>
+                        </div>
+                        <div class="property-row">
+                            <label class="property-label">Vignette</label>
+                            <div class="property-field">
+                                <input type="checkbox" id="vignette-enabled">
+                                <input type="number" class="property-input" id="vignette-intensity" value="0.5" step="0.1">
+                            </div>
+                        </div>
                     </div>
-                    <div class="status-item">
-                        <i class="mdi mdi-clock-outline"></i>
-                        60 FPS
+                </div>
+                <div class="component">
+                    <div class="component-header">Physics Debug</div>
+                    <div class="component-content">
+                        <div class="property-row">
+                            <label class="property-label">Show</label>
+                            <div class="property-field">
+                                <input type="checkbox" id="physics-debug">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="component">
+                    <div class="component-header">Audio Settings</div>
+                    <div class="component-content">
+                        <div class="property-row">
+                            <label class="property-label">Master</label>
+                            <div class="property-field">
+                                <input type="range" class="property-input" id="master-volume" min="0" max="1" step="0.1" value="1">
+                                <span class="value-display">100%</span>
+                            </div>
+                        </div>
+                        <div class="property-row">
+                            <label class="property-label">Effects</label>
+                            <div class="property-field">
+                                <input type="range" class="property-input" id="effects-volume" min="0" max="1" step="0.1" value="1">
+                                <span class="value-display">100%</span>
+                            </div>
+                        </div>
+                        <div class="property-row">
+                            <label class="property-label">Music</label>
+                            <div class="property-field">
+                                <input type="range" class="property-input" id="music-volume" min="0" max="1" step="0.1" value="1">
+                                <span class="value-display">100%</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="right-panel panel">
-                <div class="settings-panel">
-                    <div class="panel-header">Settings</div>
-                    <div class="property-group">
-                        <h4>Rendering</h4>
-                        <div class="property-row">
-                            <span class="property-label">Shadows</span>
-                            <input type="checkbox" class="property-input" checked>
-                        </div>
-                        <div class="property-row">
-                            <span class="property-label">SSAO</span>
-                            <input type="checkbox" class="property-input">
-                        </div>
-                        <div class="property-row">
-                            <span class="property-label">Anti-aliasing</span>
-                            <select class="property-input">
-                                <option>FXAA</option>
-                                <option>MSAA x4</option>
-                                <option>MSAA x8</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+        </div>
+
+        <div id="status-bar">
+            <div class="status-item">
+                <i class="mdi mdi-cube"></i>
+                <span id="object-count">0 Objects</span>
+            </div>
+            <div class="status-item">
+                <i class="mdi mdi-clock-outline"></i>
+                <span id="fps-counter">60 FPS</span>
+            </div>
+            <div class="status-item">
+                <i class="mdi mdi-memory"></i>
+                <span id="memory-usage">0 MB</span>
             </div>
         </div>
     </div>
 
-    <!-- Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Orbit Controls -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <!-- Stats.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r17/Stats.min.js"></script>
-    <!-- Tippy.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tippy.js@6.3.7/dist/tippy.umd.min.js"></script>
-    
-    <script type="module" src="./src/editor/main.js"></script>
+    <div id="context-menu"></div>
+    <div id="drop-overlay">Drop files to import</div>
+
+    <!-- Component Templates -->
+    <template id="material-component">
+        <div class="component">
+            <div class="component-header">Material</div>
+            <div class="component-content">
+                <div class="property-row">
+                    <label class="property-label">Color</label>
+                    <div class="property-field">
+                        <input type="color" class="property-input" data-property="color">
+                    </div>
+                </div>
+                <div class="property-row">
+                    <label class="property-label">Metalness</label>
+                    <div class="property-field">
+                        <input type="range" class="property-input" data-property="metalness" min="0" max="1" step="0.1">
+                        <span class="value-display">0</span>
+                    </div>
+                </div>
+                <div class="property-row">
+                    <label class="property-label">Roughness</label>
+                    <div class="property-field">
+                        <input type="range" class="property-input" data-property="roughness" min="0" max="1" step="0.1">
+                        <span class="value-display">0.5</span>
+                    </div>
+                </div>
+                <div class="property-row">
+                    <label class="property-label">Opacity</label>
+                    <div class="property-field">
+                        <input type="range" class="property-input" data-property="opacity" min="0" max="1" step="0.1">
+                        <span class="value-display">1.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="particle-component">
+        <div class="component">
+            <div class="component-header">Particle System</div>
+            <div class="component-content">
+                <div class="property-row">
+                    <label class="property-label">Count</label>
+                    <div class="property-field">
+                        <input type="number" class="property-input" data-property="maxParticles" min="0" max="10000" step="100" value="1000">
+                    </div>
+                </div>
+                <div class="property-row">
+                    <label class="property-label">Rate</label>
+                    <div class="property-field">
+                        <input type="number" class="property-input" data-property="emissionRate" min="0" max="1000" step="1" value="50">
+                    </div>
+                </div>
+                <div class="property-row">
+                    <label class="property-label">Lifetime</label>
+                    <div class="property-field">
+                        <input type="number" class="property-input" data-property="lifetime" min="0" max="10" step="0.1" value="2">
+                    </div>
+                </div>
+                <div class="property-row">
+                    <label class="property-label">Size</label>
+                    <div class="property-field">
+                        <input type="number" class="property-input" data-property="size" min="0" max="10" step="0.1" value="1">
+                    </div>
+                </div>
+                <div class="property-row">
+                    <label class="property-label">Start Color</label>
+                    <div class="property-field">
+                        <input type="color" class="property-input" data-property="startColor">
+                    </div>
+                </div>
+                <div class="property-row">
+                    <label class="property-label">End Color</label>
+                    <div class="property-field">
+                        <input type="color" class="property-input" data-property="endColor">
+                    </div>
+                </div>
+                <div class="property-row">
+                    <label class="property-label">Velocity</label>
+                    <div class="property-field vector-field">
+                        <input type="number" class="property-input" data-property="velocityX" step="0.1" value="0">
+                        <input type="number" class="property-input" data-property="velocityY" step="0.1" value="1">
+                        <input type="number" class="property-input" data-property="velocityZ" step="0.1" value="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="audio-component">
+        <div class="component">
+            <div class="component-header">Audio Source</div>
+            <div class="component-content">
+                <div class="property-row">
+                    <label class="property-label">Source</label>
+                    <div class="property-field">
+                        <select class="property-input" data-property="source">
+                            <option value="">Select audio file...</option>
+                        </select>
+                        <button class="btn" data-action="load-audio">
+                            <i class="mdi mdi-upload"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="property-row">
+                    <label class="property-label">Volume</label>
+                    <div class="property-field">
+                        <input type="range" class="property-input" data-property="volume" min="0" max="1" step="0.1" value="1">
+                        <span class="value-display">100%</span>
+                    </div>
+                </div>
+                <div class="property-row">
+                    <label class="property-label">Loop</label>
+                    <div class="property-field">
+                        <input type="checkbox" class="property-input" data-property="loop">
+                    </div>
+                </div>
+                <div class="property-row">
+                    <label class="property-label">Spatial</label>
+                    <div class="property-field">
+                        <input type="checkbox" class="property-input" data-property="spatial">
+                    </div>
+                </div>
+                <div class="property-row">
+                    <label class="property-label">Distance</label>
+                    <div class="property-field">
+                        <input type="number" class="property-input" data-property="maxDistance" min="0" step="1" value="100">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script type="module" src="/src/editor/main.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css" rel="stylesheet">
 </body>
 </html> 

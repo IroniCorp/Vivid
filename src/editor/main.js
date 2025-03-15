@@ -1,5 +1,5 @@
 import { Scene, WebGLRenderer, PerspectiveCamera, DirectionalLight, AmbientLight, 
-    GridHelper, AxesHelper, Box3, Vector3, Color } from 'three';
+    GridHelper, AxesHelper, Box3, Vector3, Color, LoadingManager, TextureLoader, AudioLoader } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { Studio } from './Studio';
@@ -9,6 +9,7 @@ import { RigidBody } from '../core/components/RigidBody';
 
 class Editor {
     constructor() {
+        this.setupLoadingManager();
         this.scene = new Scene();
         this.camera = null;
         this.renderer = null;
@@ -21,24 +22,66 @@ class Editor {
         this.setupScene();
         this.setupHelpers();
         this.setupEvents();
+        this.loadComponents();
         this.animate();
     }
 
+    setupLoadingManager() {
+        this.loadingManager = new LoadingManager();
+        this.loadingScreen = document.getElementById('loading-screen');
+        this.loadingProgress = document.getElementById('loading-progress');
+        this.loadingText = document.getElementById('loading-text');
+
+        this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+            const progress = (itemsLoaded / itemsTotal) * 100;
+            this.loadingProgress.style.width = `${progress}%`;
+            this.loadingText.textContent = `Loading... ${Math.round(progress)}%`;
+        };
+
+        this.loadingManager.onLoad = () => {
+            // Add a small delay to ensure everything is ready
+            setTimeout(() => {
+                this.loadingScreen.classList.add('hidden');
+                // Remove the loading screen from DOM after animation
+                setTimeout(() => {
+                    this.loadingScreen.remove();
+                }, 500);
+            }, 500);
+        };
+
+        this.loadingManager.onError = (url) => {
+            console.error('Error loading:', url);
+            this.loadingText.textContent = 'Error loading resources';
+            this.loadingText.style.color = '#ff4444';
+        };
+
+        // Set the loading manager for all Three.js loaders
+        this.textureLoader = new TextureLoader(this.loadingManager);
+        this.audioLoader = new AudioLoader(this.loadingManager);
+    }
+
     init() {
+        // Track loading progress
+        this.loadingText.textContent = 'Initializing renderer...';
+        
         // Renderer
         this.renderer = new WebGLRenderer({
-            canvas: document.getElementById('renderCanvas'),
+            canvas: document.getElementById('viewport-canvas'),
             antialias: true
         });
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.shadowMap.enabled = true;
 
+        this.loadingText.textContent = 'Setting up camera...';
+        
         // Camera
         this.camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.camera.position.set(5, 5, 5);
         this.camera.lookAt(0, 0, 0);
 
+        this.loadingText.textContent = 'Initializing controls...';
+        
         // Controls
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableDamping = true;
@@ -47,9 +90,13 @@ class Editor {
         // Stats
         this.stats = new Stats();
         document.body.appendChild(this.stats.dom);
+
+        this.loadingText.textContent = 'Loading resources...';
     }
 
     setupScene() {
+        this.loadingText.textContent = 'Setting up scene...';
+
         // Lights
         const ambientLight = new AmbientLight(0x404040);
         this.scene.add(ambientLight);
@@ -59,18 +106,21 @@ class Editor {
         directionalLight.castShadow = true;
         this.scene.add(directionalLight);
 
-        // Set scene background
-        this.scene.background = new Color(0x1e1e1e);
+        this.loadingText.textContent = 'Scene setup complete';
     }
 
     setupHelpers() {
+        this.loadingText.textContent = 'Adding helpers...';
+
         // Grid helper
-        const gridHelper = new GridHelper(10, 10);
-        this.scene.add(gridHelper);
+        this.gridHelper = new GridHelper(20, 20);
+        this.scene.add(this.gridHelper);
 
         // Axes helper
-        const axesHelper = new AxesHelper(5);
-        this.scene.add(axesHelper);
+        this.axesHelper = new AxesHelper(5);
+        this.scene.add(this.axesHelper);
+
+        this.loadingText.textContent = 'Helpers added';
     }
 
     setupEvents() {
@@ -190,6 +240,25 @@ class Editor {
             position.value = `${object.position.x.toFixed(2)}, ${object.position.y.toFixed(2)}, ${object.position.z.toFixed(2)}`;
             rotation.value = `${(object.rotation.x * 180 / Math.PI).toFixed(2)}, ${(object.rotation.y * 180 / Math.PI).toFixed(2)}, ${(object.rotation.z * 180 / Math.PI).toFixed(2)}`;
             scale.value = `${object.scale.x.toFixed(2)}, ${object.scale.y.toFixed(2)}, ${object.scale.z.toFixed(2)}`;
+        }
+    }
+
+    async loadComponents() {
+        this.loadingText.textContent = 'Loading components...';
+        
+        try {
+            // Load and initialize components
+            await Promise.all([
+                this.loadMaterials(),
+                this.loadTextures(),
+                this.loadAudioResources()
+            ]);
+            
+            this.loadingText.textContent = 'Components loaded';
+            this.loadingManager.onLoad(); // Trigger completion
+        } catch (error) {
+            console.error('Error loading components:', error);
+            this.loadingManager.onError('components');
         }
     }
 }

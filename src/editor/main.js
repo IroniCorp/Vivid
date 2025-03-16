@@ -1,110 +1,195 @@
 import { Scene, WebGLRenderer, PerspectiveCamera, DirectionalLight, AmbientLight, 
-    GridHelper, AxesHelper, Box3, Vector3, Color, TextureLoader, AudioLoader } from 'three';
+    GridHelper, AxesHelper, Box3, Vector3, Color, TextureLoader, AudioLoader, Clock } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { Studio } from './Studio';
 import { StudioUI } from './StudioUI';
 import { Box, Sphere, Plane, MeshStandardMaterial, Mesh } from 'three';
 import { RigidBody } from '../core/components/RigidBody';
+import { VisualScripting } from '../core/scripting/VisualScripting';
+import { TerrainSystem } from '../core/terrain/TerrainSystem';
+import { AssetBrowser } from './AssetBrowser';
+import { UndoRedoManager } from './UndoRedoManager';
+import { ProjectManager } from './ProjectManager';
+
+// Global clock for animation and timing
+const clock = new Clock();
 
 class Editor {
     constructor() {
         this.scene = new Scene();
-        this.camera = null;
-        this.renderer = null;
+        this.camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.renderer = new WebGLRenderer({ antialias: true });
         this.controls = null;
-        this.stats = null;
+        this.stats = new Stats();
         this.objects = new Map();
         this.selectedObject = null;
         this.textureLoader = new TextureLoader();
         this.audioLoader = new AudioLoader();
+        
+        // Advanced systems
+        this.visualScripting = null;
+        this.terrainSystem = null;
+        this.assetBrowser = null;
+        this.undoRedoManager = null;
+        this.projectManager = null;
 
-        // Initialize the editor with a fade-in effect
-        this.setupFadeIn();
+        // Initialize the editor
         this.init();
         this.setupScene();
         this.setupHelpers();
+        this.setupAdvancedSystems();
         this.setupEvents();
         this.animate();
     }
 
-    setupFadeIn() {
-        // Remove loading screen if it exists
-        const loadingScreen = document.getElementById('loading-screen');
-        if (loadingScreen) {
-            loadingScreen.remove();
-        }
-
-        // Create fade overlay
-        this.fadeOverlay = document.createElement('div');
-        this.fadeOverlay.style.position = 'fixed';
-        this.fadeOverlay.style.top = '0';
-        this.fadeOverlay.style.left = '0';
-        this.fadeOverlay.style.width = '100%';
-        this.fadeOverlay.style.height = '100%';
-        this.fadeOverlay.style.backgroundColor = '#1a1a1a';
-        this.fadeOverlay.style.opacity = '1';
-        this.fadeOverlay.style.transition = 'opacity 1.2s ease-out';
-        this.fadeOverlay.style.zIndex = '9999';
-        document.body.appendChild(this.fadeOverlay);
-
-        // Fade in the editor after a short delay
-        setTimeout(() => {
-            this.fadeOverlay.style.opacity = '0';
-            // Remove the overlay after the transition completes
-            setTimeout(() => {
-                this.fadeOverlay.remove();
-            }, 1200);
-        }, 300);
-    }
-
     init() {
-        // Renderer
-        this.renderer = new WebGLRenderer({
-            canvas: document.getElementById('viewport-canvas'),
-            antialias: true
-        });
+        // Setup renderer
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.shadowMap.enabled = true;
-        
-        // Camera
-        this.camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        this.camera.position.set(5, 5, 5);
+        document.getElementById('viewport-canvas').appendChild(this.renderer.domElement);
+
+        // Setup camera
+        this.camera.position.set(0, 5, 10);
         this.camera.lookAt(0, 0, 0);
-        
-        // Controls
+
+        // Setup controls
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.05;
 
-        // Stats
-        this.stats = new Stats();
-        document.body.appendChild(this.stats.dom);
+        // Setup stats
+        document.getElementById('stats').appendChild(this.stats.dom);
     }
 
     setupScene() {
-        // Lights
-        const ambientLight = new AmbientLight(0x404040);
+        // Setup default lighting
+        const ambientLight = new AmbientLight(0xffffff, 0.5);
         this.scene.add(ambientLight);
 
-        const directionalLight = new DirectionalLight(0xffffff, 1);
+        const directionalLight = new DirectionalLight(0xffffff, 0.8);
         directionalLight.position.set(5, 5, 5);
         directionalLight.castShadow = true;
         this.scene.add(directionalLight);
-        
-        // Set scene background
-        this.scene.background = new Color(0x1e1e1e);
+
+        // Setup default ground
+        const ground = new Mesh(
+            new Plane(20, 20),
+            new MeshStandardMaterial({ color: 0x808080, roughness: 0.8, metalness: 0.2 })
+        );
+        ground.rotation.x = -Math.PI / 2;
+        ground.receiveShadow = true;
+        this.scene.add(ground);
     }
 
     setupHelpers() {
         // Grid helper
-        this.gridHelper = new GridHelper(20, 20);
-        this.scene.add(this.gridHelper);
+        const grid = new GridHelper(20, 20);
+        this.scene.add(grid);
 
         // Axes helper
-        this.axesHelper = new AxesHelper(5);
-        this.scene.add(this.axesHelper);
+        const axes = new AxesHelper(5);
+        this.scene.add(axes);
+    }
+
+    setupAdvancedSystems() {
+        // Initialize visual scripting system
+        this.visualScripting = new VisualScripting(this.scene);
+        
+        // Initialize terrain system
+        this.terrainSystem = new TerrainSystem(this.scene, this.renderer);
+        
+        // Initialize asset browser
+        this.assetBrowser = new AssetBrowser(document.getElementById('asset-browser'));
+        
+        // Initialize undo/redo system
+        this.undoRedoManager = new UndoRedoManager();
+        
+        // Initialize project management
+        this.projectManager = new ProjectManager(this);
+
+        // Setup menu event listeners
+        this.setupMenuListeners();
+    }
+
+    setupMenuListeners() {
+        // New project
+        document.getElementById('new-project').addEventListener('click', () => {
+            this.projectManager.createProject();
+        });
+
+        // Open project
+        document.getElementById('open-project').addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.vivid';
+            input.onchange = (e) => {
+                if (e.target.files.length > 0) {
+                    this.projectManager.loadProject(e.target.files[0]);
+                }
+            };
+            input.click();
+        });
+
+        // Save project
+        document.getElementById('save-project').addEventListener('click', () => {
+            this.projectManager.saveProject();
+        });
+
+        // Project settings
+        document.getElementById('project-settings').addEventListener('click', () => {
+            // TODO: Implement settings dialog
+        });
+
+        // Add object button
+        document.getElementById('add-object').addEventListener('click', () => {
+            this.showAddObjectMenu();
+        });
+    }
+
+    showAddObjectMenu() {
+        const menu = document.createElement('div');
+        menu.className = 'context-menu';
+        const button = document.getElementById('add-object');
+        const rect = button.getBoundingClientRect();
+        
+        menu.style.left = `${rect.left}px`;
+        menu.style.top = `${rect.bottom}px`;
+        
+        menu.innerHTML = `
+            <ul>
+                <li data-type="Box">Box</li>
+                <li data-type="Sphere">Sphere</li>
+                <li data-type="Cylinder">Cylinder</li>
+                <li data-type="Plane">Plane</li>
+                <li data-type="Light">Light</li>
+                <li data-type="Camera">Camera</li>
+            </ul>
+        `;
+        
+        document.body.appendChild(menu);
+        
+        menu.querySelectorAll('li').forEach(item => {
+            item.addEventListener('click', () => {
+                const type = item.dataset.type;
+                this.createObject(type);
+                menu.remove();
+            });
+        });
+        
+        // Remove menu when clicking outside
+        const removeMenu = () => {
+            menu.remove();
+            document.removeEventListener('click', removeMenu);
+        };
+        document.addEventListener('click', removeMenu);
+    }
+
+    createObject(type, options = {}) {
+        const object = this.studio.createObject(type, options);
+        this.undoRedoManager.addAddObjectAction(object, this.scene);
+        return object;
     }
 
     setupEvents() {
@@ -115,241 +200,82 @@ class Editor {
             this.renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // Setup UI events
-        this.setupUIEvents();
-    }
-
-    setupUIEvents() {
-        // Transform controls
-        document.querySelector('.mdi-cursor-move').parentElement.addEventListener('click', () => {
-            this.setTransformMode('translate');
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Undo/Redo
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 'z' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.undoRedoManager.undo();
+                } else if ((e.key === 'Z' || (e.key === 'z' && e.shiftKey))) {
+                    e.preventDefault();
+                    this.undoRedoManager.redo();
+                }
+            }
         });
-
-        document.querySelector('.mdi-rotate-3d').parentElement.addEventListener('click', () => {
-            this.setTransformMode('rotate');
-        });
-
-        document.querySelector('.mdi-arrow-expand-all').parentElement.addEventListener('click', () => {
-            this.setTransformMode('scale');
-        });
-
-        // View helpers
-        document.querySelector('.mdi-grid').parentElement.addEventListener('click', (e) => {
-            const button = e.currentTarget;
-            button.classList.toggle('active');
-            this.toggleGrid();
-        });
-
-        document.querySelector('.mdi-axis-arrow').parentElement.addEventListener('click', (e) => {
-            const button = e.currentTarget;
-            button.classList.toggle('active');
-            this.toggleAxes();
-        });
-    }
-
-    setTransformMode(mode) {
-        // Remove active class from all transform buttons
-        document.querySelectorAll('.viewport-toolbar .button').forEach(btn => {
-            btn.classList.remove('active');
-        });
-
-        // Add active class to clicked button
-        document.querySelector(`.mdi-${mode === 'translate' ? 'cursor-move' : 
-            mode === 'rotate' ? 'rotate-3d' : 'arrow-expand-all'}`).parentElement.classList.add('active');
-
-        // TODO: Implement transform controls
-    }
-
-    toggleGrid() {
-        const grid = this.scene.getObjectByName('grid');
-        if (grid) grid.visible = !grid.visible;
-    }
-
-    toggleAxes() {
-        const axes = this.scene.getObjectByName('axes');
-        if (axes) axes.visible = !axes.visible;
     }
 
     animate() {
         requestAnimationFrame(() => this.animate());
 
+        // Update controls
         this.controls.update();
+
+        // Update stats
         this.stats.update();
+
+        // Update visual scripting
+        if (this.visualScripting) {
+            this.visualScripting.update(clock.getDelta());
+        }
+
+        // Update terrain system
+        if (this.terrainSystem) {
+            this.terrainSystem.update();
+        }
+
+        // Render scene
         this.renderer.render(this.scene, this.camera);
-
-        // Update FPS counter
-        document.querySelector('.mdi-clock-outline').parentElement.textContent = 
-            ` ${Math.round(this.stats.getFPS())} FPS`;
     }
 
-    // Scene management methods
-    addObject(object) {
-        this.scene.add(object);
-        this.objects.set(object.uuid, object);
-        this.updateObjectCount();
-    }
+    dispose() {
+        // Dispose of advanced systems
+        if (this.visualScripting) this.visualScripting.dispose();
+        if (this.terrainSystem) this.terrainSystem.dispose();
+        if (this.assetBrowser) this.assetBrowser.dispose();
+        if (this.projectManager) this.projectManager.dispose();
 
-    removeObject(object) {
-        this.scene.remove(object);
-        this.objects.delete(object.uuid);
-        this.updateObjectCount();
-    }
+        // Remove event listeners
+        window.removeEventListener('resize', this.onWindowResize);
 
-    selectObject(object) {
-        if (this.selectedObject) {
-            // Remove highlight from previously selected object
-            this.selectedObject.material.emissive?.setHex(0x000000);
-        }
+        // Dispose of Three.js resources
+        this.scene.traverse(object => {
+            if (object.geometry) object.geometry.dispose();
+            if (object.material) {
+                if (Array.isArray(object.material)) {
+                    object.material.forEach(material => material.dispose());
+                } else {
+                    object.material.dispose();
+                }
+            }
+        });
 
-        this.selectedObject = object;
-        if (object) {
-            // Highlight selected object
-            object.material.emissive?.setHex(0x666666);
-            this.updateProperties(object);
-        }
-    }
-
-    updateObjectCount() {
-        document.querySelector('.mdi-cube').parentElement.textContent = 
-            ` ${this.objects.size} Objects`;
-    }
-
-    updateProperties(object) {
-        // Update transform inputs
-        const position = document.querySelector('input[value="0, 0, 0"]');
-        const rotation = document.querySelector('input[value="0, 0, 0"]');
-        const scale = document.querySelector('input[value="1, 1, 1"]');
-
-        if (object) {
-            position.value = `${object.position.x.toFixed(2)}, ${object.position.y.toFixed(2)}, ${object.position.z.toFixed(2)}`;
-            rotation.value = `${(object.rotation.x * 180 / Math.PI).toFixed(2)}, ${(object.rotation.y * 180 / Math.PI).toFixed(2)}, ${(object.rotation.z * 180 / Math.PI).toFixed(2)}`;
-            scale.value = `${object.scale.x.toFixed(2)}, ${object.scale.y.toFixed(2)}, ${object.scale.z.toFixed(2)}`;
-        }
+        this.renderer.dispose();
     }
 }
 
-// Create container
-const container = document.createElement('div');
-container.style.width = '100vw';
-container.style.height = '100vh';
-container.style.position = 'fixed';
-container.style.top = '0';
-container.style.left = '0';
-document.body.appendChild(container);
+// Remove loading screen with fade effect
+const loadingScreen = document.querySelector('.loading-screen');
+loadingScreen.style.opacity = '0';
+loadingScreen.style.transition = 'opacity 0.5s ease';
+setTimeout(() => {
+    loadingScreen.remove();
+}, 500);
 
-// Initialize studio
-const studio = new Studio(container);
-const ui = new StudioUI(studio);
-
-// Set up selection change callback
-studio.onSelectionChange = (object) => {
-    ui.updateHierarchy();
-    ui.updateProperties(object);
-};
-
-// Add keyboard shortcuts
-document.addEventListener('keydown', (event) => {
-    // Delete selected object
-    if (event.key === 'Delete' && studio.transformControls.selectedObject) {
-        const object = studio.transformControls.selectedObject;
-        studio.removeObject(object);
-        ui.updateHierarchy();
-    }
-
-    // Transform mode shortcuts
-    if (event.key === 'w' || event.key === 'e' || event.key === 'r') {
-        const mode = event.key === 'w' ? 'translate' :
-                    event.key === 'e' ? 'rotate' :
-                    'scale';
-        studio.setTransformMode(mode);
-        ui.updateToolbar(mode);
-    }
-
-    // Space toggle
-    if (event.key === 'x') {
-        const space = studio.transformControls.space === 'world' ? 'local' : 'world';
-        studio.setTransformSpace(space);
-        ui.updateToolbar(undefined, space);
-    }
-
-    // Snap toggle
-    if (event.key === 'v') {
-        const snap = !studio.transformControls.snap;
-        studio.setTransformSnap(snap);
-        ui.updateToolbar(undefined, undefined, snap);
-    }
-
-    // Focus selected
-    if (event.key === 'f' && studio.transformControls.selectedObject) {
-        const object = studio.transformControls.selectedObject;
-        const distance = 5;
-        const direction = new Vector3(0, 0, 1).multiplyScalar(distance);
-        studio.camera.position.copy(object.position).add(direction);
-        studio.camera.lookAt(object.position);
-    }
-});
+// Initialize editor
+const editor = new Editor();
 
 // Handle cleanup
 window.addEventListener('beforeunload', () => {
-    studio.dispose();
-    ui.dispose();
-});
-
-// Add ground plane
-const groundGeometry = new Plane(50, 50);
-const groundMaterial = new MeshStandardMaterial({ color: 0x808080 });
-const ground = new Mesh(groundGeometry, groundMaterial);
-ground.rotation.x = -Math.PI / 2;
-studio.addObject(ground);
-
-// Add RigidBody component to ground
-const groundBody = new RigidBody({
-    type: 'static',
-    shape: 'plane'
-});
-ground.add(groundBody);
-
-// Add some example objects
-function createBox(position) {
-    const geometry = new Box(1, 1, 1);
-    const material = new MeshStandardMaterial({ color: Math.random() * 0xffffff });
-    const mesh = new Mesh(geometry, material);
-    mesh.position.copy(position);
-    
-    // Add RigidBody component
-    const rigidBody = new RigidBody({
-        mass: 1,
-        shape: 'box',
-        size: { x: 1, y: 1, z: 1 }
-    });
-    mesh.add(rigidBody);
-    
-    studio.addObject(mesh);
-    return mesh;
-}
-
-function createSphere(position) {
-    const geometry = new Sphere(0.5);
-    const material = new MeshStandardMaterial({ color: Math.random() * 0xffffff });
-    const mesh = new Mesh(geometry, material);
-    mesh.position.copy(position);
-    
-    // Add RigidBody component
-    const rigidBody = new RigidBody({
-        mass: 1,
-        shape: 'sphere',
-        radius: 0.5
-    });
-    mesh.add(rigidBody);
-    
-    studio.addObject(mesh);
-    return mesh;
-}
-
-// Add some objects to the scene
-createBox({ x: 0, y: 5, z: 0 });
-createSphere({ x: 2, y: 7, z: 0 });
-createBox({ x: -2, y: 9, z: 0 });
-
-// Initialize editor
-const editor = new Editor(); 
+    editor.dispose();
+}); 

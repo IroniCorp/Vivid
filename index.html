@@ -3,615 +3,502 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vivid Engine</title>
-    <link rel="icon" type="image/png" href="/favicon.png">
+    <title>Vivid Engine | Editor</title>
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css" rel="stylesheet">
     <style>
+        /* Reset and base styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
-
-        :root {
-            --primary: #00ff88;
-            --primary-dark: #00cc6a;
-            --bg-dark: #1a1a1a;
-            --bg-panel: #252526;
-            --bg-panel-light: #2d2d2d;
-            --border: #333;
-            --text: #ffffff;
-            --text-secondary: #888;
-        }
-
+        
         body {
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            background: var(--bg-dark);
-            color: var(--text);
-            font-family: 'Arial', sans-serif;
+            background-color: #1e1e1e;
+            color: #e0e0e0;
         }
-
+        
+        /* Layout */
         .editor {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            grid-template-rows: 40px 1fr 200px;
+            width: 100vw;
             height: 100vh;
-            opacity: 0;
-            animation: fadeIn 0.8s ease-out 0.3s forwards;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Toolbar */
-        .toolbar {
-            height: 40px;
-            background: var(--bg-panel);
-            border-bottom: 1px solid var(--border);
+        
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background-color: #2d2d2d;
+            border-bottom: 1px solid #3d3d3d;
             display: flex;
             align-items: center;
-            padding: 0 16px;
-            gap: 16px;
+            padding: 0 10px;
+            gap: 10px;
         }
-
-        .toolbar-group {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .toolbar-separator {
-            width: 1px;
-            height: 24px;
-            background: var(--border);
-            margin: 0 8px;
-        }
-
-        /* Main Content */
-        .main-content {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        /* Panels */
-        .panel {
-            background: var(--bg-panel);
-            border-right: 1px solid var(--border);
-        }
-
-        .panel-header {
-            height: 32px;
-            background: var(--bg-panel-light);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            padding: 0 12px;
-            font-size: 12px;
+        
+        .header .logo {
+            font-size: 18px;
             font-weight: bold;
-            justify-content: space-between;
+            color: #00b4f0;
         }
-
-        /* Left Panel */
-        .left-panel {
-            width: 300px;
+        
+        .header .menu {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .header .menu-item {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .header .menu-item:hover {
+            color: #00b4f0;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background-color: #252526;
+            border-right: 1px solid #3d3d3d;
             display: flex;
             flex-direction: column;
         }
-
-        /* Hierarchy */
+        
+        .sidebar-left {
+            grid-row: 2 / -1;
+        }
+        
+        .sidebar-right {
+            grid-row: 2 / -1;
+            grid-column: 3;
+            border-right: none;
+            border-left: 1px solid #3d3d3d;
+        }
+        
+        /* Viewport */
+        .viewport {
+            grid-column: 2;
+            grid-row: 2;
+            position: relative;
+            background-color: #1e1e1e;
+        }
+        
+        .viewport canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .viewport-toolbar {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #2d2d2d;
+            border: 1px solid #3d3d3d;
+            border-radius: 4px;
+            display: flex;
+            gap: 5px;
+            padding: 5px;
+        }
+        
+        .viewport-toolbar .button {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            color: #e0e0e0;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .viewport-toolbar .button:hover {
+            background-color: #3d3d3d;
+        }
+        
+        .viewport-toolbar .button.active {
+            background-color: #00b4f0;
+            color: #ffffff;
+        }
+        
+        /* Bottom panel */
+        .bottom-panel {
+            grid-column: 1 / -1;
+            grid-row: 3;
+            background-color: #252526;
+            border-top: 1px solid #3d3d3d;
+            display: flex;
+        }
+        
+        /* Hierarchy panel */
         .hierarchy {
             flex: 1;
-            overflow-y: auto;
-            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
-
+        
+        .hierarchy-header {
+            padding: 10px;
+            font-weight: bold;
+            border-bottom: 1px solid #3d3d3d;
+        }
+        
+        .hierarchy-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
         .hierarchy-item {
             display: flex;
             align-items: center;
-            padding: 4px 8px;
+            gap: 5px;
+            padding: 5px;
             cursor: pointer;
             border-radius: 4px;
-            gap: 8px;
-            font-size: 13px;
         }
-
+        
         .hierarchy-item:hover {
-            background: var(--bg-panel-light);
+            background-color: #3d3d3d;
         }
-
+        
         .hierarchy-item.selected {
-            background: rgba(0, 255, 136, 0.1);
-            color: var(--primary);
+            background-color: #00b4f0;
+            color: #ffffff;
         }
-
-        /* Inspector */
+        
+        /* Inspector panel */
         .inspector {
-            height: 400px;
-            border-top: 1px solid var(--border);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .inspector-header {
+            padding: 10px;
+            font-weight: bold;
+            border-bottom: 1px solid #3d3d3d;
+        }
+        
+        .inspector-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .component {
+            background-color: #2d2d2d;
+            border: 1px solid #3d3d3d;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
+        .component-header {
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #3d3d3d;
+            cursor: pointer;
+        }
+        
+        .component-content {
+            padding: 10px;
+        }
+        
+        .property {
+            margin-bottom: 8px;
+        }
+        
+        .property label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 12px;
+            color: #b0b0b0;
+        }
+        
+        .property input {
+            width: 100%;
+            padding: 4px 8px;
+            background-color: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            border-radius: 4px;
+            color: #e0e0e0;
+        }
+        
+        /* Asset browser */
+        .asset-browser {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .asset-browser-toolbar {
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid #3d3d3d;
+        }
+        
+        .asset-browser-sidebar {
+            width: 200px;
+            border-right: 1px solid #3d3d3d;
             overflow-y: auto;
         }
-
-        .component {
-            border-bottom: 1px solid var(--border);
-        }
-
-        .component-header {
-            padding: 8px 12px;
-            background: var(--bg-panel-light);
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .component-content {
-            padding: 12px;
-        }
-
-        .property-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-            gap: 8px;
-            font-size: 12px;
-        }
-
-        .property-label {
-            width: 80px;
-            color: var(--text-secondary);
-        }
-
-        .property-field {
+        
+        .asset-browser-content {
             flex: 1;
-            display: flex;
-            gap: 4px;
+            overflow-y: auto;
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
         }
-
-        .property-input {
-            background: var(--bg-panel-light);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 4px 8px;
+        
+        .asset-item {
+            background-color: #2d2d2d;
+            border: 1px solid #3d3d3d;
             border-radius: 4px;
-            font-size: 12px;
-            width: 60px;
-        }
-
-        /* Viewport */
-        .viewport {
-            flex: 1;
-            position: relative;
-        }
-
-        .viewport-toolbar {
-            position: absolute;
-            top: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg-panel);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            display: flex;
-            padding: 4px;
-            gap: 4px;
-            z-index: 100;
-        }
-
-        .viewport-canvas {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Right Panel */
-        .right-panel {
-            width: 300px;
-            border-left: 1px solid var(--border);
-        }
-
-        /* Buttons */
-        .btn {
-            background: var(--bg-panel-light);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 6px 12px;
-            border-radius: 4px;
+            overflow: hidden;
             cursor: pointer;
-            font-size: 13px;
+        }
+        
+        .asset-item:hover {
+            border-color: #00b4f0;
+        }
+        
+        .asset-preview {
+            height: 100px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            justify-content: center;
+            background-color: #1e1e1e;
         }
-
-        .btn:hover {
-            background: var(--bg-panel);
+        
+        .asset-info {
+            padding: 8px;
         }
-
-        .btn.primary {
-            background: var(--primary);
-            border-color: var(--primary-dark);
-            color: var(--bg-dark);
-        }
-
-        .btn.primary:hover {
-            background: var(--primary-dark);
-        }
-
-        .btn.tool {
-            padding: 6px;
-        }
-
-        .btn.tool.active {
-            background: var(--primary);
-            color: var(--bg-dark);
-        }
-
-        /* Status Bar */
-        #status-bar {
-            height: 24px;
-            background: var(--bg-panel);
-            border-top: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            padding: 0 12px;
+        
+        .asset-name {
             font-size: 12px;
-            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-
-        .status-item {
-            margin-right: 16px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        
+        .asset-meta {
+            font-size: 10px;
+            color: #b0b0b0;
         }
-
-        /* Context Menu */
-        #context-menu {
+        
+        /* Context menu */
+        .context-menu {
             position: fixed;
-            background: var(--bg-panel);
-            border: 1px solid var(--border);
+            background-color: #2d2d2d;
+            border: 1px solid #3d3d3d;
             border-radius: 4px;
-            padding: 4px;
-            min-width: 160px;
+            padding: 5px 0;
+            min-width: 150px;
             z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
-
-        .context-menu-item {
-            padding: 6px 12px;
-            font-size: 13px;
+        
+        .context-menu ul {
+            list-style: none;
+        }
+        
+        .context-menu li {
+            padding: 5px 15px;
             cursor: pointer;
-            border-radius: 2px;
+        }
+        
+        .context-menu li:hover {
+            background-color: #3d3d3d;
+        }
+        
+        /* Dialog */
+        .dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #2d2d2d;
+            border: 1px solid #3d3d3d;
+            border-radius: 4px;
+            padding: 20px;
+            min-width: 300px;
+            z-index: 1000;
+        }
+        
+        .dialog h2 {
+            margin-bottom: 15px;
+        }
+        
+        .dialog-content {
+            margin-bottom: 20px;
+        }
+        
+        .dialog-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        /* Buttons */
+        .button {
+            padding: 8px 16px;
+            background-color: #3d3d3d;
+            border: none;
+            border-radius: 4px;
+            color: #e0e0e0;
+            cursor: pointer;
+            font-size: 14px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 5px;
         }
-
-        .context-menu-item:hover {
-            background: var(--bg-panel-light);
+        
+        .button:hover {
+            background-color: #4d4d4d;
         }
-
-        .context-menu-separator {
-            height: 1px;
-            background: var(--border);
-            margin: 4px 0;
+        
+        .button.primary {
+            background-color: #00b4f0;
+            color: #ffffff;
         }
-
-        /* Drop Overlay */
-        #drop-overlay {
+        
+        .button.primary:hover {
+            background-color: #00a0d6;
+        }
+        
+        /* Stats */
+        #stats {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+        }
+        
+        /* Loading screen */
+        .loading-screen {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,255,136,0.1);
-            border: 2px dashed var(--primary);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            font-size: 24px;
-            color: var(--primary);
-        }
-
-        #drop-overlay.visible {
+            width: 100vw;
+            height: 100vh;
+            background-color: #1e1e1e;
             display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .loading-screen .logo {
+            font-size: 36px;
+            font-weight: bold;
+            color: #00b4f0;
+            margin-bottom: 20px;
+        }
+        
+        .loading-bar {
+            width: 300px;
+            height: 4px;
+            background-color: #3d3d3d;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .loading-progress {
+            width: 0%;
+            height: 100%;
+            background-color: #00b4f0;
+            transition: width 0.3s ease;
         }
     </style>
 </head>
 <body>
-    <div class="editor">
-        <div class="toolbar">
-            <div class="toolbar-group">
-                <div id="logo">Vivid<span>Engine</span></div>
-            </div>
-            <div class="toolbar-separator"></div>
-            <div class="toolbar-group">
-                <button class="btn primary" id="play-btn">
-                    <i class="mdi mdi-play"></i>
-                    Play
-                </button>
-            </div>
-            <div class="toolbar-separator"></div>
-            <div class="toolbar-group">
-                <button class="btn" id="save-btn">
-                    <i class="mdi mdi-content-save"></i>
-                    Save
-                </button>
-                <button class="btn" id="export-btn">
-                    <i class="mdi mdi-export"></i>
-                    Export
-                </button>
-            </div>
-        </div>
-
-        <div class="main-content">
-            <div class="panel left-panel">
-                <div class="hierarchy">
-                    <div class="panel-header">
-                        Hierarchy
-                        <button class="btn" id="add-object-btn">
-                            <i class="mdi mdi-plus"></i>
-                        </button>
-                    </div>
-                    <div id="hierarchy-content"></div>
-                </div>
-                <div class="inspector">
-                    <div class="panel-header">
-                        Inspector
-                        <button class="btn" id="add-component-btn">
-                            <i class="mdi mdi-plus"></i>
-                        </button>
-                    </div>
-                    <div id="inspector-content"></div>
-                </div>
-            </div>
-
-            <div class="viewport">
-                <div class="viewport-toolbar">
-                    <button class="btn tool" id="translate-tool" title="Translate (W)">
-                        <i class="mdi mdi-cursor-move"></i>
-                    </button>
-                    <button class="btn tool" id="rotate-tool" title="Rotate (E)">
-                        <i class="mdi mdi-rotate-3d"></i>
-                    </button>
-                    <button class="btn tool" id="scale-tool" title="Scale (R)">
-                        <i class="mdi mdi-arrow-expand-all"></i>
-                    </button>
-                    <div class="toolbar-separator"></div>
-                    <button class="btn tool" id="local-space-btn" title="Toggle World/Local Space (X)">
-                        <i class="mdi mdi-axis-arrow"></i>
-                    </button>
-                    <button class="btn tool" id="snap-btn" title="Toggle Snap (V)">
-                        <i class="mdi mdi-grid"></i>
-                    </button>
-                </div>
-                <canvas id="viewport-canvas" class="viewport-canvas"></canvas>
-            </div>
-
-            <div class="panel right-panel">
-                <div class="panel-header">Scene Settings</div>
-                <div class="component">
-                    <div class="component-header">Post Processing</div>
-                    <div class="component-content">
-                        <div class="property-row">
-                            <label class="property-label">Bloom</label>
-                            <div class="property-field">
-                                <input type="checkbox" id="bloom-enabled">
-                                <input type="number" class="property-input" id="bloom-intensity" value="1.0" step="0.1">
-                            </div>
-                        </div>
-                        <div class="property-row">
-                            <label class="property-label">FXAA</label>
-                            <div class="property-field">
-                                <input type="checkbox" id="fxaa-enabled">
-                            </div>
-                        </div>
-                        <div class="property-row">
-                            <label class="property-label">Vignette</label>
-                            <div class="property-field">
-                                <input type="checkbox" id="vignette-enabled">
-                                <input type="number" class="property-input" id="vignette-intensity" value="0.5" step="0.1">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="component">
-                    <div class="component-header">Physics Debug</div>
-                    <div class="component-content">
-                        <div class="property-row">
-                            <label class="property-label">Show</label>
-                            <div class="property-field">
-                                <input type="checkbox" id="physics-debug">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="component">
-                    <div class="component-header">Audio Settings</div>
-                    <div class="component-content">
-                        <div class="property-row">
-                            <label class="property-label">Master</label>
-                            <div class="property-field">
-                                <input type="range" class="property-input" id="master-volume" min="0" max="1" step="0.1" value="1">
-                                <span class="value-display">100%</span>
-                            </div>
-                        </div>
-                        <div class="property-row">
-                            <label class="property-label">Effects</label>
-                            <div class="property-field">
-                                <input type="range" class="property-input" id="effects-volume" min="0" max="1" step="0.1" value="1">
-                                <span class="value-display">100%</span>
-                            </div>
-                        </div>
-                        <div class="property-row">
-                            <label class="property-label">Music</label>
-                            <div class="property-field">
-                                <input type="range" class="property-input" id="music-volume" min="0" max="1" step="0.1" value="1">
-                                <span class="value-display">100%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="status-bar">
-            <div class="status-item">
-                <i class="mdi mdi-cube"></i>
-                <span id="object-count">0 Objects</span>
-            </div>
-            <div class="status-item">
-                <i class="mdi mdi-clock-outline"></i>
-                <span id="fps-counter">60 FPS</span>
-            </div>
-            <div class="status-item">
-                <i class="mdi mdi-memory"></i>
-                <span id="memory-usage">0 MB</span>
-            </div>
+    <div class="loading-screen">
+        <div class="logo">Vivid Engine</div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
         </div>
     </div>
-
-    <div id="context-menu"></div>
-    <div id="drop-overlay">Drop files to import</div>
-
-    <!-- Component Templates -->
-    <template id="material-component">
-        <div class="component">
-            <div class="component-header">Material</div>
-            <div class="component-content">
-                <div class="property-row">
-                    <label class="property-label">Color</label>
-                    <div class="property-field">
-                        <input type="color" class="property-input" data-property="color">
-                    </div>
-                </div>
-                <div class="property-row">
-                    <label class="property-label">Metalness</label>
-                    <div class="property-field">
-                        <input type="range" class="property-input" data-property="metalness" min="0" max="1" step="0.1">
-                        <span class="value-display">0</span>
-                    </div>
-                </div>
-                <div class="property-row">
-                    <label class="property-label">Roughness</label>
-                    <div class="property-field">
-                        <input type="range" class="property-input" data-property="roughness" min="0" max="1" step="0.1">
-                        <span class="value-display">0.5</span>
-                    </div>
-                </div>
-                <div class="property-row">
-                    <label class="property-label">Opacity</label>
-                    <div class="property-field">
-                        <input type="range" class="property-input" data-property="opacity" min="0" max="1" step="0.1">
-                        <span class="value-display">1.0</span>
-                    </div>
-                </div>
+    
+    <div class="editor">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">Vivid Engine</div>
+            <div class="menu">
+                <a class="menu-item" id="new-project">New Project</a>
+                <a class="menu-item" id="open-project">Open Project</a>
+                <a class="menu-item" id="save-project">Save Project</a>
+                <a class="menu-item" id="project-settings">Settings</a>
             </div>
         </div>
-    </template>
-
-    <template id="particle-component">
-        <div class="component">
-            <div class="component-header">Particle System</div>
-            <div class="component-content">
-                <div class="property-row">
-                    <label class="property-label">Count</label>
-                    <div class="property-field">
-                        <input type="number" class="property-input" data-property="maxParticles" min="0" max="10000" step="100" value="1000">
-                    </div>
+        
+        <!-- Left sidebar (Hierarchy) -->
+        <div class="sidebar sidebar-left">
+            <div class="hierarchy">
+                <div class="hierarchy-header">
+                    Hierarchy
+                    <button class="button" id="add-object">
+                        <i class="mdi mdi-plus"></i>
+                    </button>
                 </div>
-                <div class="property-row">
-                    <label class="property-label">Rate</label>
-                    <div class="property-field">
-                        <input type="number" class="property-input" data-property="emissionRate" min="0" max="1000" step="1" value="50">
-                    </div>
-                </div>
-                <div class="property-row">
-                    <label class="property-label">Lifetime</label>
-                    <div class="property-field">
-                        <input type="number" class="property-input" data-property="lifetime" min="0" max="10" step="0.1" value="2">
-                    </div>
-                </div>
-                <div class="property-row">
-                    <label class="property-label">Size</label>
-                    <div class="property-field">
-                        <input type="number" class="property-input" data-property="size" min="0" max="10" step="0.1" value="1">
-                    </div>
-                </div>
-                <div class="property-row">
-                    <label class="property-label">Start Color</label>
-                    <div class="property-field">
-                        <input type="color" class="property-input" data-property="startColor">
-                    </div>
-                </div>
-                <div class="property-row">
-                    <label class="property-label">End Color</label>
-                    <div class="property-field">
-                        <input type="color" class="property-input" data-property="endColor">
-                    </div>
-                </div>
-                <div class="property-row">
-                    <label class="property-label">Velocity</label>
-                    <div class="property-field vector-field">
-                        <input type="number" class="property-input" data-property="velocityX" step="0.1" value="0">
-                        <input type="number" class="property-input" data-property="velocityY" step="0.1" value="1">
-                        <input type="number" class="property-input" data-property="velocityZ" step="0.1" value="0">
-                    </div>
-                </div>
+                <div class="hierarchy-content" id="hierarchy-content"></div>
             </div>
         </div>
-    </template>
-
-    <template id="audio-component">
-        <div class="component">
-            <div class="component-header">Audio Source</div>
-            <div class="component-content">
-                <div class="property-row">
-                    <label class="property-label">Source</label>
-                    <div class="property-field">
-                        <select class="property-input" data-property="source">
-                            <option value="">Select audio file...</option>
-                        </select>
-                        <button class="btn" data-action="load-audio">
-                            <i class="mdi mdi-upload"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="property-row">
-                    <label class="property-label">Volume</label>
-                    <div class="property-field">
-                        <input type="range" class="property-input" data-property="volume" min="0" max="1" step="0.1" value="1">
-                        <span class="value-display">100%</span>
-                    </div>
-                </div>
-                <div class="property-row">
-                    <label class="property-label">Loop</label>
-                    <div class="property-field">
-                        <input type="checkbox" class="property-input" data-property="loop">
-                    </div>
-                </div>
-                <div class="property-row">
-                    <label class="property-label">Spatial</label>
-                    <div class="property-field">
-                        <input type="checkbox" class="property-input" data-property="spatial">
-                    </div>
-                </div>
-                <div class="property-row">
-                    <label class="property-label">Distance</label>
-                    <div class="property-field">
-                        <input type="number" class="property-input" data-property="maxDistance" min="0" step="1" value="100">
-                    </div>
-                </div>
+        
+        <!-- Viewport -->
+        <div class="viewport">
+            <canvas id="viewport-canvas"></canvas>
+            <div class="viewport-toolbar">
+                <button class="button" title="Translate (W)">
+                    <i class="mdi mdi-cursor-move"></i>
+                </button>
+                <button class="button" title="Rotate (E)">
+                    <i class="mdi mdi-rotate-3d"></i>
+                </button>
+                <button class="button" title="Scale (R)">
+                    <i class="mdi mdi-arrow-expand-all"></i>
+                </button>
+                <div style="width: 1px; background-color: #3d3d3d; margin: 0 5px;"></div>
+                <button class="button" title="Toggle Grid">
+                    <i class="mdi mdi-grid"></i>
+                </button>
+                <button class="button" title="Toggle Axes">
+                    <i class="mdi mdi-axis-arrow"></i>
+                </button>
+            </div>
+            <div id="stats"></div>
+        </div>
+        
+        <!-- Right sidebar (Inspector) -->
+        <div class="sidebar sidebar-right">
+            <div class="inspector">
+                <div class="inspector-header">Inspector</div>
+                <div class="inspector-content" id="inspector-content"></div>
             </div>
         </div>
-    </template>
-
-    <script type="module" src="/src/editor/main.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css" rel="stylesheet">
+        
+        <!-- Bottom panel (Asset Browser) -->
+        <div class="bottom-panel">
+            <div class="asset-browser" id="asset-browser"></div>
+        </div>
+    </div>
+    
+    <script type="module" src="src/editor/main.js"></script>
 </body>
 </html> 

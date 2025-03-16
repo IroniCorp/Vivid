@@ -17,79 +17,54 @@ const clock = new Clock();
 
 class Editor {
     constructor() {
-        // Create fade overlay
-        this.fadeOverlay = document.createElement('div');
-        this.fadeOverlay.style.position = 'fixed';
-        this.fadeOverlay.style.top = '0';
-        this.fadeOverlay.style.left = '0';
-        this.fadeOverlay.style.width = '100%';
-        this.fadeOverlay.style.height = '100%';
-        this.fadeOverlay.style.backgroundColor = '#1e1e1e';
-        this.fadeOverlay.style.opacity = '1';
-        this.fadeOverlay.style.transition = 'opacity 0.8s ease';
-        this.fadeOverlay.style.zIndex = '9999';
-        document.body.appendChild(this.fadeOverlay);
-
-        // Remove loading screen if it exists
-        const loadingScreen = document.querySelector('.loading-screen');
-        if (loadingScreen) {
-            loadingScreen.remove();
-        }
-
+        // Core setup
+        this.scene = new Scene();
+        this.camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.renderer = new WebGLRenderer({ antialias: true });
+        this.controls = null;
+        this.stats = new Stats();
+        this.objects = new Map();
+        this.selectedObject = null;
+        this.textureLoader = new TextureLoader();
+        this.audioLoader = new AudioLoader();
+        
         // Initialize core systems
-        this.initializeSystems();
-    }
+        this.init();
+        this.setupScene();
+        this.setupHelpers();
 
-    async initializeSystems() {
-        try {
-            // Core setup
-            this.scene = new Scene();
-            this.camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            this.renderer = new WebGLRenderer({ antialias: true });
-            this.controls = null;
-            this.stats = new Stats();
-            this.objects = new Map();
-            this.selectedObject = null;
-            this.textureLoader = new TextureLoader();
-            this.audioLoader = new AudioLoader();
-            
-            // Initialize core systems
-            await this.init();
-            await this.setupScene();
-            await this.setupHelpers();
+        // Initialize advanced systems
+        this.visualScripting = new VisualScripting(this.scene);
+        this.terrainSystem = new TerrainSystem(this.scene, this.renderer);
+        this.assetBrowser = new AssetBrowser(document.getElementById('asset-browser'));
+        this.undoRedoManager = new UndoRedoManager();
+        this.projectManager = new ProjectManager(this);
 
-            // Initialize advanced systems
-            this.visualScripting = new VisualScripting(this.scene);
-            this.terrainSystem = new TerrainSystem(this.scene, this.renderer);
-            this.assetBrowser = new AssetBrowser(document.getElementById('asset-browser'));
-            this.undoRedoManager = new UndoRedoManager();
-            this.projectManager = new ProjectManager(this);
+        // Setup events and menu listeners
+        this.setupEvents();
+        this.setupMenuListeners();
 
-            // Setup events and menu listeners
-            this.setupEvents();
-            this.setupMenuListeners();
+        // Start animation loop
+        this.animate();
 
-            // Start animation loop
-            this.animate();
+        // Create and start fade-in effect
+        const fadeOverlay = document.createElement('div');
+        fadeOverlay.style.position = 'fixed';
+        fadeOverlay.style.top = '0';
+        fadeOverlay.style.left = '0';
+        fadeOverlay.style.width = '100%';
+        fadeOverlay.style.height = '100%';
+        fadeOverlay.style.backgroundColor = '#1e1e1e';
+        fadeOverlay.style.opacity = '1';
+        fadeOverlay.style.transition = 'opacity 0.5s ease';
+        fadeOverlay.style.zIndex = '9999';
+        document.body.appendChild(fadeOverlay);
 
-            // Fade in the editor
-            setTimeout(() => {
-                this.fadeOverlay.style.opacity = '0';
-                setTimeout(() => {
-                    this.fadeOverlay.remove();
-                }, 800);
-            }, 100);
-        } catch (error) {
-            console.error('Error initializing editor:', error);
-            // Show error message to user
-            this.fadeOverlay.innerHTML = `
-                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ff4444; text-align: center;">
-                    <h2>Error Initializing Editor</h2>
-                    <p>${error.message}</p>
-                    <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px;">Retry</button>
-                </div>
-            `;
-        }
+        // Trigger fade-in
+        requestAnimationFrame(() => {
+            fadeOverlay.style.opacity = '0';
+            setTimeout(() => fadeOverlay.remove(), 500);
+        });
     }
 
     init() {

@@ -1,11 +1,23 @@
-import { Scene, WebGLRenderer, PerspectiveCamera, DirectionalLight, AmbientLight, 
-    GridHelper, AxesHelper, Box3, Vector3, Color, TextureLoader, AudioLoader, Clock } from 'three';
+import { 
+    Scene, 
+    WebGLRenderer, 
+    PerspectiveCamera, 
+    DirectionalLight, 
+    AmbientLight,
+    GridHelper, 
+    AxesHelper,
+    Vector3,
+    PlaneGeometry,
+    MeshStandardMaterial,
+    Mesh,
+    TextureLoader, 
+    AudioLoader, 
+    Clock 
+} from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { Studio } from './Studio';
 import { StudioUI } from './StudioUI';
-import { Box, Sphere, Plane, MeshStandardMaterial, Mesh } from 'three';
-import { RigidBody } from '../core/components/RigidBody';
 import { VisualScripting } from '../core/scripting/VisualScripting';
 import { TerrainSystem } from '../core/terrain/TerrainSystem';
 import { AssetBrowser } from './AssetBrowser';
@@ -28,51 +40,90 @@ class Editor {
         this.textureLoader = new TextureLoader();
         this.audioLoader = new AudioLoader();
         
-        // Initialize core systems
-        this.init();
-        this.setupScene();
-        this.setupHelpers();
+        try {
+            // Initialize core systems
+            this.init();
+            this.setupScene();
+            this.setupHelpers();
 
-        // Initialize advanced systems
-        this.visualScripting = new VisualScripting(this.scene);
-        this.terrainSystem = new TerrainSystem(this.scene, this.renderer);
-        this.assetBrowser = new AssetBrowser(document.getElementById('asset-browser'));
-        this.undoRedoManager = new UndoRedoManager();
-        this.projectManager = new ProjectManager(this);
+            // Initialize studio
+            this.studio = new Studio(this.scene);
+            this.studioUI = new StudioUI(this.studio);
 
-        // Setup events and menu listeners
-        this.setupEvents();
-        this.setupMenuListeners();
+            // Initialize advanced systems
+            this.visualScripting = new VisualScripting(this.scene);
+            this.terrainSystem = new TerrainSystem(this.scene, this.renderer);
+            this.assetBrowser = new AssetBrowser(document.getElementById('asset-browser'));
+            this.undoRedoManager = new UndoRedoManager();
+            this.projectManager = new ProjectManager(this);
 
-        // Start animation loop
-        this.animate();
+            // Setup events and menu listeners
+            this.setupEvents();
+            this.setupMenuListeners();
 
-        // Create and start fade-in effect
-        const fadeOverlay = document.createElement('div');
-        fadeOverlay.style.position = 'fixed';
-        fadeOverlay.style.top = '0';
-        fadeOverlay.style.left = '0';
-        fadeOverlay.style.width = '100%';
-        fadeOverlay.style.height = '100%';
-        fadeOverlay.style.backgroundColor = '#1e1e1e';
-        fadeOverlay.style.opacity = '1';
-        fadeOverlay.style.transition = 'opacity 0.5s ease';
-        fadeOverlay.style.zIndex = '9999';
-        document.body.appendChild(fadeOverlay);
+            // Start animation loop
+            this.animate();
 
-        // Trigger fade-in
-        requestAnimationFrame(() => {
-            fadeOverlay.style.opacity = '0';
-            setTimeout(() => fadeOverlay.remove(), 500);
-        });
+            // Create and start fade-in effect
+            const fadeOverlay = document.createElement('div');
+            fadeOverlay.style.position = 'fixed';
+            fadeOverlay.style.top = '0';
+            fadeOverlay.style.left = '0';
+            fadeOverlay.style.width = '100%';
+            fadeOverlay.style.height = '100%';
+            fadeOverlay.style.backgroundColor = '#1e1e1e';
+            fadeOverlay.style.opacity = '1';
+            fadeOverlay.style.transition = 'opacity 0.5s ease';
+            fadeOverlay.style.zIndex = '9999';
+            document.body.appendChild(fadeOverlay);
+
+            // Trigger fade-in
+            requestAnimationFrame(() => {
+                fadeOverlay.style.opacity = '0';
+                setTimeout(() => fadeOverlay.remove(), 500);
+            });
+        } catch (error) {
+            console.error('Error initializing editor:', error);
+            this.handleInitializationError(error);
+        }
+    }
+
+    handleInitializationError(error) {
+        const errorOverlay = document.createElement('div');
+        errorOverlay.style.position = 'fixed';
+        errorOverlay.style.top = '0';
+        errorOverlay.style.left = '0';
+        errorOverlay.style.width = '100%';
+        errorOverlay.style.height = '100%';
+        errorOverlay.style.backgroundColor = '#1e1e1e';
+        errorOverlay.style.color = '#ff4444';
+        errorOverlay.style.display = 'flex';
+        errorOverlay.style.alignItems = 'center';
+        errorOverlay.style.justifyContent = 'center';
+        errorOverlay.style.zIndex = '9999';
+        errorOverlay.innerHTML = `
+            <div style="text-align: center;">
+                <h2>Error Initializing Editor</h2>
+                <p>${error.message}</p>
+                <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px;">
+                    Retry
+                </button>
+            </div>
+        `;
+        document.body.appendChild(errorOverlay);
     }
 
     init() {
+        const viewport = document.getElementById('viewport-canvas');
+        if (!viewport) {
+            throw new Error('Viewport canvas not found');
+        }
+
         // Setup renderer
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.shadowMap.enabled = true;
-        document.getElementById('viewport-canvas').appendChild(this.renderer.domElement);
+        viewport.appendChild(this.renderer.domElement);
 
         // Setup camera
         this.camera.position.set(0, 5, 10);
@@ -84,7 +135,11 @@ class Editor {
         this.controls.dampingFactor = 0.05;
 
         // Setup stats
-        document.getElementById('stats').appendChild(this.stats.dom);
+        const statsContainer = document.getElementById('stats');
+        if (!statsContainer) {
+            throw new Error('Stats container not found');
+        }
+        statsContainer.appendChild(this.stats.dom);
     }
 
     setupScene() {
@@ -99,7 +154,7 @@ class Editor {
 
         // Setup default ground
         const ground = new Mesh(
-            new Plane(20, 20),
+            new PlaneGeometry(20, 20),
             new MeshStandardMaterial({ color: 0x808080, roughness: 0.8, metalness: 0.2 })
         );
         ground.rotation.x = -Math.PI / 2;
@@ -248,6 +303,8 @@ class Editor {
         if (this.terrainSystem) this.terrainSystem.dispose();
         if (this.assetBrowser) this.assetBrowser.dispose();
         if (this.projectManager) this.projectManager.dispose();
+        if (this.studio) this.studio.dispose();
+        if (this.studioUI) this.studioUI.dispose();
 
         // Remove event listeners
         window.removeEventListener('resize', this.onWindowResize);
